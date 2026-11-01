@@ -13,6 +13,8 @@
 #include "imgui.hpp"
 #include "webgpu/gpu.hpp"
 #include "webgpu/gpu_prof.hpp"
+#include "webgpu/screenshot.hpp"
+#include <aurora/screenshot.hpp>
 #include <webgpu/webgpu_cpp.h>
 #endif
 
@@ -210,6 +212,7 @@ void shutdown() noexcept {
 #ifdef AURORA_ENABLE_GX
   gx::fifo::shutdown();
   gfx::render_worker::synchronize();
+  screenshot::cancel();
 #ifdef AURORA_ENABLE_RMLUI
   rmlui::shutdown();
 #endif
@@ -366,6 +369,7 @@ void end_frame() noexcept {
     } else {
       Log.info("Skipping present; window not presentable");
     }
+    screenshot::encode(encoder, currentTexture);
     webgpu::gpu_prof::frame_end(encoder);
     const wgpu::CommandBufferDescriptor cmdBufDescriptor{.label = "Redraw command buffer"};
     const auto buffer = encoder.Finish(&cmdBufDescriptor);
@@ -374,6 +378,7 @@ void end_frame() noexcept {
       g_queue.Submit(1, &buffer);
     }
     webgpu::gpu_prof::after_submit();
+    screenshot::after_submit();
     if (canPresent && g_surface) {
       ZoneScopedN("Present");
       wgpu::ConvertibleStatus status = wgpu::Status::Error;

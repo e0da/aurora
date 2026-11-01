@@ -54,6 +54,11 @@ target_link_libraries(os_time_tests PRIVATE fmt::fmt gtest gtest_main)
 gtest_discover_tests(os_time_tests)
 
 if (AURORA_ENABLE_GX)
+  add_executable(screenshot_pixels_tests screenshot_pixels_test.cpp)
+  target_include_directories(screenshot_pixels_tests PRIVATE ../lib)
+  target_link_libraries(screenshot_pixels_tests PRIVATE gtest gtest_main)
+  gtest_discover_tests(screenshot_pixels_tests)
+
   # GX FIFO round-trip tests
   # Compile GX sources directly to avoid pulling in the full renderer/WebGPU runtime
   add_executable(gx_fifo_tests
