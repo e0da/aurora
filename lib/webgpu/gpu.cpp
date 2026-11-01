@@ -1069,7 +1069,8 @@ bool initialize(AuroraBackend auroraBackend, bool allowCpu) {
       .surfaceConfiguration =
           wgpu::SurfaceConfiguration{
               .format = surfaceFormat,
-              .usage = wgpu::TextureUsage::RenderAttachment,
+              .usage = wgpu::TextureUsage::RenderAttachment |
+                       (g_surfaceCapabilities.usages & wgpu::TextureUsage::CopySrc),
               .width = size.native_fb_width,
               .height = size.native_fb_height,
               .presentMode = presentMode,
